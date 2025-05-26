@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kanban</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #151515;
+      color: #f8f8f8;
+      padding: 2rem;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #topBar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin-bottom: 1rem;
+      padding: 0 2rem;
+    }
+
+    #kanbanTitle {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #e05252;
+    }
+
+    #currentDate {
+      font-weight: 600;
+      color: #e05252;
+      font-size: 1rem;
+      position: absolute;
+      right: 2rem;
+      top: 0;
+    }
+
+    .kanban-board {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-grow: 1;
+      overflow: auto;
+    }
+
+    .column {
+      background: #1f1f1f;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 15px rgba(224, 82, 82, 0.1);
+      padding: 1rem;
+      flex: 1;
+      min-width: 320px;
+      max-width: 32%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 3vh;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .column h2 {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: #e05252;
+    }
+  
+    .task {
+      background: #262626;
+      border-left: 5px solid #e05252;
+      margin-bottom: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(224, 82, 82, 0.1);
+    }
+
+    .task button {
+      background: transparent;
+      border: 2px solid #e05252;
+      color: #e05252;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .task button:hover {
+      background: #e05252;
+      color: #0d0d0d;
+    }
+
+    .add-task {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .add-task input {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border-radius: 1rem;
+      border: none;
+      font-size: 1rem;
+      background: #2a2a2a;
+      color: #f8f8f8;
+      outline: none;
+    }
+
+    .add-task button {
+      background: #e05252;
+      color: black;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .add-task button:hover {
+      background: #f06565;
+    }
+
+    #progressBarContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 90vw;
+      height: 30px;
+      padding-left: 15px;
+      background: #262626;
+      border-radius: 12.5px;
+      box-shadow: 0 0 10px rgba(224, 82, 82, 0.5);
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: #e05252;
+      transition: width 0.4s ease;
+    }
+
+    #resetBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #e05252;
+      color: black;
+      border: none;
+      font-size: 1.5rem;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 12px #e05252;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      transition: background 0.3s;
+    }
+
+    #resetBtn:hover {
+      background: #f06565;
+    }
+
+    @media (max-width: 960px) {
+      .kanban-board {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .column {
+        max-width: 90%;
+      }
+
+      #progressBarContainer {
+        width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 60px;
+      }
+
+      #resetBtn {
+        right: 50%;
+        transform: translateX(50%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="topBar">
+    <div id="kanbanTitle">Kanban</div>
+    <div id="currentDate"></div>
+  </div>
+
+  <div class="kanban-board">
+    <div class="column" id="todo">
+      <h2>To Do</h2>
+      <div class="tasks"></div>
+      <div class="add-task">
+        <input type="text" placeholder="New task..." id="taskInput" />
+        <button onclick="addTask()">Add</button>
+      </div>
+    </div>
+
+    <div class="column" id="progress">
+      <h2>In Progress</h2>
+      <div class="tasks"></div>
+    </div>
+
+    <div class="column" id="done">
+      <h2>Done</h2>
+      <div class="tasks"></div>
+    </div>
+  </div>
+
+  <div id="progressBarContainer">
+<h2 style="position: absolute; color: #c34747;">Progress</h2>
+    <div id="progressBar"></div>
+  </div>
+
+  <button id="resetBtn" title="Reset Tasks">❌</button>
+
+  <script src="kanban.js"></script>
+</body>
+</html>

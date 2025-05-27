@@ -1,7 +1,7 @@
 # Kanban Web
 
 Kanban Web is a quick test version for desktop application who has problem with installation . All the features are exactly same. 
-# Projenin Amacı
+# Goal
 
 This project was developed to help users manage their tasks effectively. The Kanban methodology aims to increase productivity by visualizing the workflow. Developed using Electron, this application facilitates task management with a user-friendly interface. It also simplifies the installation process.
 
